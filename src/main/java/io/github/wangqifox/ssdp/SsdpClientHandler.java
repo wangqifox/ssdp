@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
  * @date 2021/1/7
  */
 public class SsdpClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
+    private final static String RESPONSE_HEAD = "HTTP/1.1 200 OK";
     private final DiscoveryClientListener discoveryClientListener;
 
     public SsdpClientHandler(DiscoveryClientListener discoveryClientListener) {
@@ -24,7 +25,9 @@ public class SsdpClientHandler extends SimpleChannelInboundHandler<DatagramPacke
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
         InetAddress remoteAddress = datagramPacket.sender().getAddress();
         String response = datagramPacket.content().toString(StandardCharsets.UTF_8);
-        DiscoveryResponse discoveryResponse = new DiscoveryResponse.Parser().parse(response.getBytes(StandardCharsets.UTF_8));
-        discoveryClientListener.onDiscoveryResponse(discoveryResponse, remoteAddress);
+        if (response.startsWith(RESPONSE_HEAD)) {
+            DiscoveryResponse discoveryResponse = new DiscoveryResponse.Parser().parse(response.getBytes(StandardCharsets.UTF_8));
+            discoveryClientListener.onDiscoveryResponse(discoveryResponse, remoteAddress);
+        }
     }
 }

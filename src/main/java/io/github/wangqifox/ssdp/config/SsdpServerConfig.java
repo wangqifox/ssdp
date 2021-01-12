@@ -11,8 +11,6 @@ import java.net.NetworkInterface;
  * @date 2021/1/12
  */
 public class SsdpServerConfig {
-
-
     private String id;
     private NetworkInterface networkInterface;
     private NotifyAliveListener notifyAliveListener;
